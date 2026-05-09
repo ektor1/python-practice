@@ -24,8 +24,8 @@ def construct_pascals_triangle(n: int) -> None:
 
 
 def main():
-    construct_pascals_triangle(20)
-
+    construct_pascals_triangle(20) # triangle formatting is completely off but we love it just the way it is
+    
 
 if __name__ == "__main__":
     main()
