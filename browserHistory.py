@@ -1,90 +1,111 @@
-# Browser History
 class Node:
-    def __init__(self, val, next=None, prev=None):
+    def __init__(self, val, prev=None, next=None):
         self.val = val
-        self.next = next
         self.prev = prev
+        self.next = next
+
 
 class BrowserHistory:
-    # Browser history where the first url is stored at the beginning. Implementation with double linked list
-    # has to be of max length = capacity
-
-    def __init__(self, capacity: int):
+    """
+    Implementation of browser history with LRU cache
+    No dupe URLs allowed. Nodes are stored in a hash map for O(1) lookup time
+    Once we reach capacity we pop FIFO
+    """
+    def __init__(self, capacity):
         self.capacity = capacity
-        self.cur_capacity = capacity 
-        # create two dummy nodes for head and tail
-        self.head, self.tail = Node(-1), Node(-1)
-        self.head.next = self.tail
-        self.tail.prev = self.head
-        self.currently_viewing = self.tail 
-        # hash map to access nodes for deletion in constant time O(1)
-        self.node_map = {}
+        self.n_visited = 0
+        self.urls_visited = {}
+        self.head = None
+        self.tail = None
+
 
     def visit(self, url: str) -> None:
-        if url in self.node_map:
-            self.remove(url)
-            self.insert(url)
-            return
+        """
+        (1) If we have capacity and haven't visited that url before, increment n_visisted. Else FIFO
+        (2) Always insert the new node
+        """
+        if self.n_visited == self.capacity:
+            self.remove(self.head.val)
+        elif url not in self.urls_visited:
+            self.n_visited += 1
+        
+        self.insert(url) 
 
-        self.insert(url)
-        if self.cur_capacity > 0:
-            self.cur_capacity += 1
-
-        else:
-            url_to_remove = self.tail.prev.url
-            self.remove(url_to_remove)
 
     def insert(self, url: str) -> None:
-        new_node = Node(url)
-        if self.currently_viewing != self.head.next:
-            prev, cur, next = self.currently_viewing, new_node, self.tail 
-        else:
-            prev, cur, next = self.head, new_node, self.head.next
+        """
+        (1) If url has been visited before get the node from hash map. Else create a new node
+        (2) If list is empty set both head and tail equal to that node
+            Else add node to tail
+        """
+        if self.get_current_url == url:
+            return 
         
-        prev.next = cur
-        next.prev = cur
-        cur.prev = prev
-        cur.next = next
-        self.node_map[url] = new_node
-        self.currently_viewing = new_node
+        if url in self.urls_visited:
+            self.remove(url)
+            node = self.urls_visited[url]
+        else:
+            node = Node(url)
+
+        if self.head is None:
+            self.head = node
+            self.tail = node
+
+        elif self.head == self.tail:
+            self.head.next = node
+            node.prev = self.head
+            self.tail = node
+        else:
+            prev, cur = self.tail, node
+            prev.next = node
+            cur.prev = prev
+            self.tail = cur
+
+        self.urls_visited[url] = node
+
 
     def remove(self, url: str) -> None:
-        to_remove = self.node_map[url]
-        prev, next = to_remove.prev, to_remove.next
-        prev.next = next
-        next.prev = prev
-        del self.node[url]
+        node = self.urls_visited[url]
+        if node == self.head:
+            self.head = self.head.next
+            self.head.prev = None
 
-    def get_current_url(self):
-        if self.currently_viewing != self.tail:
-            return self.currently_viewing.url 
         else:
-            return "Browser history is empty"
+            prev, cur, next = node.prev, node, node.next
+            prev.next = next
+            next.prev = prev
+
+
+    def get_current_url(self) -> Node | str:
+        if self.tail is not None:
+            return self.tail.val
+        return "History is empty"
+
 
     def back(self):
-        if self.currently_viewing.next != self.tail:
-            self.currently_viewing = self.currently_viewing.next
-            return self.currently_viewing.url
-        else:
-            return "No history beyond this point"    
+        pass
             
+
     def forward(self):
-        if self.currently_viewing.prev != self.head:
-            self.currently_viewing = self.currently_viewing.prev
-            return self.currently_viewing.url
+        pass
+
+
+    def print_history(self) -> Node | str:
+        if self.tail is not None:
+            cur = self.tail
+            while cur is not None:
+                print(cur.val)
+                cur = cur.prev
         else:
-            return "No history beyond this point"
-
-    def print_history(self) -> list[str]:
-        history = [] 
-        cur = self.head.next
-
-        while cur != self.tail:
-            history.append(cur.url) 
-            cur = cur.next
-
-        return history
+            return "History is empty"
 
 
 
-
+if __name__ == '__main__':
+    session = BrowserHistory(10)
+    session.print_history()
+    for url in ['youtube.com', 'bloomberg.com', 'investopedia.com', 'google.com']:
+        session.visit(url)
+    session.print_history()
+    session.visit('youtube.com')
+    session.print_history()

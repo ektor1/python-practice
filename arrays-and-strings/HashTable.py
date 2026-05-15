@@ -12,7 +12,7 @@ class HashTable:
         self.table_capacity = 0
 
 
-    def hash_function(self, key) -> int:
+    def le_hash(self, key) -> int:
         pass
 
     
@@ -21,7 +21,7 @@ class HashTable:
     
     def insert_key_val(self, key, val): 
         pair_node = Node(key, val)
-        hash = self.hash_function(key)
+        hash = self.le_hash(key)
         index = self.hash_to_index(hash)
         pass
 
