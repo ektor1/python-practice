@@ -1,2 +1,3 @@
 # Python practice
-To solidify my understanding of algorithms and data structures with Python
+- Cracking the coding interview problem solutions for each chapter in ctci-<chapter>.ipynb files
+- Other problems and implementations
