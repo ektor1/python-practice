@@ -1,6 +1,6 @@
 class Node:
     def __init__(self, val, prev=None, next=None):
-        self.val = val
+        self.data = val
         self.prev = prev
         self.next = next
 
@@ -25,7 +25,7 @@ class BrowserHistory:
         (2) Always insert the new node
         """
         if self.n_visited == self.capacity:
-            self.remove(self.head.val)
+            self.remove(self.head.data)
         elif url not in self.urls_visited:
             self.n_visited += 1
         
@@ -78,7 +78,7 @@ class BrowserHistory:
 
     def get_current_url(self) -> Node | str:
         if self.tail is not None:
-            return self.tail.val
+            return self.tail.data
         return "History is empty"
 
 
@@ -94,7 +94,7 @@ class BrowserHistory:
         if self.tail is not None:
             cur = self.tail
             while cur is not None:
-                print(cur.val)
+                print(cur.data)
                 cur = cur.prev
         else:
             return "History is empty"
